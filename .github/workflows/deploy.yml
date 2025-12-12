@@ -1,0 +1,168 @@
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: '3.2'
+          bundler-cache: true
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '18'
+
+      - name: Install dependencies
+        run: |
+          bundle install
+          sudo apt-get update
+          sudo apt-get install -y curl sqlite3
+
+      - name: Configure database for static generation
+        run: |
+          # Créer une config SQLite temporaire
+          cat > config/database.yml << 'EOF'
+          default: &default
+            adapter: sqlite3
+            pool: <%= ENV.fetch("RAILS_MAX_THREADS") { 5 } %>
+            timeout: 5000
+
+          development:
+            <<: *default
+            database: db/development.sqlite3
+
+          test:
+            <<: *default
+            database: db/test.sqlite3
+
+          production:
+            <<: *default
+            database: db/production.sqlite3
+          EOF
+
+      - name: Setup database
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE || 'dummy_secret_key_base_for_build_' }}
+        run: |
+          RAILS_ENV=production bundle exec rails db:create || true
+          RAILS_ENV=production bundle exec rails db:migrate || true
+
+      - name: Precompile assets
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE || 'dummy_secret_key_base_for_build_' }}
+        run: |
+          RAILS_ENV=production bundle exec rails assets:precompile
+
+      - name: Build static site
+        env:
+          RAILS_ENV: production
+          SECRET_KEY_BASE: ${{ secrets.SECRET_KEY_BASE || 'dummy_secret_key_base_for_build_' }}
+          PORT: 3000
+        run: |
+          # Démarrer Rails en arrière-plan
+          bundle exec rails server -e production -p 3000 -b 0.0.0.0 > /tmp/rails.log 2>&1 &
+          RAILS_PID=$!
+          
+          # Attendre que le serveur soit prêt
+          echo "Waiting for Rails server to start..."
+          for i in {1..30}; do
+            if curl -s http://localhost:3000/up > /dev/null 2>&1; then
+              echo "Rails server is ready!"
+              break
+            fi
+            if [ $i -eq 30 ]; then
+              echo "Server failed to start. Logs:"
+              cat /tmp/rails.log
+              exit 1
+            fi
+            sleep 2
+          done
+          
+          # Créer le dossier de sortie
+          mkdir -p _site
+          
+          # Télécharger les pages avec curl
+          echo "Downloading pages..."
+          curl -sL http://localhost:3000/ -o _site/index.html
+          curl -sL http://localhost:3000/about -o _site/about.html
+          curl -sL http://localhost:3000/contact -o _site/contact.html
+          curl -sL http://localhost:3000/projects -o _site/projects.html
+          
+          # Vérifier que les fichiers ont été téléchargés
+          for file in _site/*.html; do
+            if [ ! -s "$file" ] || grep -q "Action Controller: Exception" "$file"; then
+              echo "Error: $file is empty or contains an error page"
+              cat "$file" | head -50
+              exit 1
+            fi
+            echo "✓ $(basename $file) downloaded ($(wc -c < "$file") bytes)"
+          done
+          
+          # Arrêter le serveur Rails
+          kill $RAILS_PID 2>/dev/null || true
+          sleep 2
+          pkill -f 'rails server' || true
+          
+          # Copier les assets compilés
+          echo "Copying assets..."
+          cp -r public/assets _site/assets 2>/dev/null || true
+          
+          # Copier les fichiers publics
+          cp -r public/*.svg _site/ 2>/dev/null || true
+          cp -r public/*.pdf _site/ 2>/dev/null || true
+          cp -r public/*.txt _site/ 2>/dev/null || true
+          
+          # Corriger les liens dans les fichiers HTML
+          echo "Fixing links in HTML files..."
+          find _site -name "*.html" -type f -exec sed -i 's|http://localhost:3000/||g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|href="/|href="./|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|src="/|src="./|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|action="/|action="./|g' {} \;
+          
+          # Créer un fichier .nojekyll pour désactiver Jekyll
+          touch _site/.nojekyll
+          
+          echo "Static site built successfully!"
+
+      - name: Setup Pages
+        uses: actions/configure-pages@v4
+
+      - name: Upload artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: '_site'
+
+  deploy:
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    runs-on: ubuntu-latest
+    needs: build
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+
