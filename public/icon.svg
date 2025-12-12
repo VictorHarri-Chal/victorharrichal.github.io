@@ -1,0 +1,22 @@
+<svg width="512" height="512" xmlns="http://www.w3.org/2000/svg">
+  <!-- Fond arrondi avec ombre -->
+  <defs>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="4" stdDeviation="8" flood-color="#000000" flood-opacity="0.3"/>
+    </filter>
+  </defs>
+
+  <!-- Fond principal -->
+  <rect x="32" y="32" width="448" height="448" rx="64" fill="#18181b" filter="url(#shadow)"/>
+
+  <!-- Texte VH -->
+  <text x="256" y="320"
+        font-family="Inter, sans-serif"
+        font-size="180"
+        font-weight="700"
+        text-anchor="middle"
+        fill="#ffffff"
+        letter-spacing="-0.02em">
+    VH
+  </text>
+</svg>

@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title><%= content_for(:title) || "Victor Harri-Chal" %></title>
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <%= csrf_meta_tags %>
+    <%= csp_meta_tag %>
+
+    <%= yield :head %>
+
+    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
+    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
+
+    <!-- Icônes pour l'onglet du navigateur -->
+    <link rel="icon" href="/icon.svg" type="image/svg+xml">
+    <link rel="apple-touch-icon" href="/icon.png" sizes="180x180">
+
+    <!-- Google Fonts - Outfit -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <%# Includes all stylesheet files in app/assets/stylesheets %>
+    <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
+    <%= javascript_importmap_tags %>
+  </head>
+
+  <body class="min-h-dvh bg-neutral-950 text-white relative overflow-x-hidden <%= 'overflow-hidden' if current_page?(root_path) || current_page?(contact_path) %> font-outfit" data-controller="starfield">
+    <% unless current_page?(root_path) %>
+      <header class="fixed top-0 inset-x-0 z-50 transition-transform duration-300 %>"
+              data-controller="navbar"
+              data-navbar-target="navbar">
+        <nav class="container mx-auto flex items-center justify-between px-5 h-16">
+          <%= link_to "←",
+              controller_name == 'projects' && action_name == 'show' ? projects_path : root_path,
+              class: "text-neutral-400 hover:text-white transition" %>
+          <div class="flex items-center gap-6 text-sm">
+            <%= link_to "About", about_path, class: "hover:text-white text-neutral-400 transition" %>
+            <%= link_to "Projects", projects_path, class: "hover:text-white text-neutral-400 transition" %>
+            <%= link_to "Contact", contact_path, class: "hover:text-white text-neutral-400 transition" %>
+          </div>
+        </nav>
+      </header>
+    <% end %>
+
+    <div aria-hidden="true" class="starfield" data-starfield-target="starfield"></div>
+    <div aria-hidden="true" class="light-beam"></div>
+
+    <main class="container mx-auto px-5 <%= 'pt-0' if current_page?(root_path) %> <%= 'pt-32 pb-20' unless current_page?(root_path) %>">
+      <%= yield %>
+    </main>
+  </body>
+</html>
