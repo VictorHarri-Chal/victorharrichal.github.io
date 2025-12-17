@@ -49,7 +49,7 @@ jobs:
           bundle update sqlite3
           bundle install --jobs 4 --retry 3
 
-      - name: Configure database for static generation (SQLite)
+      - name: Configure database for static generation (SQLite, single DB)
         run: |
           cat > config/database.yml << 'EOF'
           default: &default
@@ -65,9 +65,18 @@ jobs:
             <<: *default
             database: db/test.sqlite3
 
-          production:
+          production: &production
             <<: *default
             database: db/production.sqlite3
+
+          queue:
+            <<: *production
+
+          cache:
+            <<: *production
+
+          cable:
+            <<: *production
           EOF
 
       - name: Setup database
