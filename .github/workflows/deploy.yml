@@ -38,6 +38,10 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y curl sqlite3 libsqlite3-dev pkg-config
 
+      - name: Update lockfile for sqlite3
+        run: |
+          bundle lock --update sqlite3
+
       - name: Install gems (update sqlite3)
         run: |
           bundle config set deployment false
