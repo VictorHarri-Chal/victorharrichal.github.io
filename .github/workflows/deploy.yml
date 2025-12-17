@@ -26,7 +26,7 @@ jobs:
         uses: ruby/setup-ruby@v1
         with:
           ruby-version: '3.2'
-          bundler-cache: true
+          bundler-cache: false
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -37,6 +37,12 @@ jobs:
         run: |
           sudo apt-get update
           sudo apt-get install -y curl sqlite3 libsqlite3-dev pkg-config
+
+      - name: Install gems (allow lockfile update for sqlite3)
+        run: |
+          bundle config set deployment false
+          bundle config set frozen false
+          bundle install --jobs 4 --retry 3
 
       - name: Configure database for static generation (SQLite)
         run: |
