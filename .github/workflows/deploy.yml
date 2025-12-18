@@ -127,18 +127,41 @@ jobs:
           
           # Télécharger les pages de projets individuels (fichiers HTML directs)
           mkdir -p _site/projects
+          echo "Downloading project pages..."
           curl -sL http://localhost:3000/projects/nutri-flow -o _site/projects/nutri-flow.html
+          echo "  Downloaded nutri-flow.html ($(wc -c < _site/projects/nutri-flow.html) bytes)"
           curl -sL http://localhost:3000/projects/nestio-bnb -o _site/projects/nestio-bnb.html
+          echo "  Downloaded nestio-bnb.html ($(wc -c < _site/projects/nestio-bnb.html) bytes)"
           curl -sL http://localhost:3000/projects/scandela -o _site/projects/scandela.html
+          echo "  Downloaded scandela.html ($(wc -c < _site/projects/scandela.html) bytes)"
 
           # Vérifier les fichiers HTML téléchargés
+          echo "Verifying downloaded files..."
           for file in _site/*.html _site/projects/*.html; do
-            if [ ! -s "$file" ] || grep -q "Action Controller: Exception" "$file"; then
-              echo "Error: $file is empty or contains an error page"
+            if [ ! -f "$file" ]; then
+              echo "Error: $file does not exist"
+              exit 1
+            fi
+            if [ ! -s "$file" ]; then
+              echo "Error: $file is empty"
+              exit 1
+            fi
+            if grep -q "Action Controller: Exception" "$file"; then
+              echo "Error: $file contains an error page"
               head -50 "$file" || true
               exit 1
             fi
             echo "✓ $(basename $(dirname $file))/$(basename $file) downloaded ($(wc -c < "$file") bytes)"
+          done
+          
+          # Vérifier spécifiquement les pages de projets
+          echo "Verifying project pages..."
+          for project in nutri-flow nestio-bnb scandela; do
+            if [ ! -f "_site/projects/${project}.html" ]; then
+              echo "Error: _site/projects/${project}.html not found"
+              exit 1
+            fi
+            echo "✓ projects/${project}.html exists"
           done
 
           kill $RAILS_PID 2>/dev/null || true
@@ -159,8 +182,24 @@ jobs:
           # Rendre l'importmap relative pour GitHub Pages (sous-chemins éventuels)
           find _site -name "*.html" -type f -exec sed -i 's|"\/assets/|"./assets/|g' {} \;
           # Corriger les liens vers les projets pour pointer vers les fichiers HTML
+          # D'abord les liens relatifs, puis absolus
           find _site -name "*.html" -type f -exec sed -i 's|href="\./projects/\([^"]*\)"|href="./projects/\1.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="/projects/\([^"]*\)"|href="./projects/\1.html"|g' {} \;
+          # Corriger le JavaScript dans les fichiers téléchargés (window.location.href)
+          # Le JS compilé contient: window.location.href = `/projects/${projectSlug}`
+          # On doit le transformer en: window.location.href = `./projects/${projectSlug}.html`
+          find _site -name "*.html" -type f -exec sed -i 's|window\.location\.href = `\/projects\/\${\([^}]*\)}`|window.location.href = `./projects/${`\1`}.html`|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|window\.location\.href = `\/projects\/\([^`]*\)`|window.location.href = `./projects/\1.html`|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i "s|window\.location\.href = '/projects/\([^']*\)'|window.location.href = './projects/\1.html'|g" {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|window\.location\.href = \"\/projects\/\([^\"]*\)\"|window.location.href = "./projects/\1.html"|g' {} \;
+          # Corriger aussi dans les fichiers JS compilés dans assets
+          # Pattern avec template literal: `/projects/${projectSlug}`
+          find _site/assets -name "*.js" -type f -exec sed -i 's|window\.location\.href = `\/projects\/\${\([^}]*\)}`|window.location.href = `./projects/${`\1`}.html`|g' {} \;
+          find _site/assets -name "*.js" -type f -exec sed -i 's|window\.location\.href = `\/projects\/\([^`]*\)`|window.location.href = `./projects/\1.html`|g' {} \;
+          # Pattern avec concaténation: "/projects/" + projectSlug
+          find _site/assets -name "*.js" -type f -exec sed -i 's|"/projects/" + \([^;]*\)|"./projects/" + `\1.html`|g' {} \;
+          find _site/assets -name "*.js" -type f -exec sed -i "s|'/projects/' + \([^;]*\)|'./projects/' + `\1.html`|g" {} \;
+          find _site/assets -name "*.js" -type f -exec sed -i 's|`\/projects\/` + \([^;]*\)|`./projects/` + `\1.html`|g' {} \;
           # Corriger les chemins relatifs dans les pages de projets (elles sont dans un sous-dossier)
           find _site/projects -name "*.html" -type f -exec sed -i 's|href="\./assets/|href="../assets/|g' {} \;
           find _site/projects -name "*.html" -type f -exec sed -i 's|src="\./assets/|src="../assets/|g' {} \;
@@ -171,6 +210,14 @@ jobs:
           find _site/projects -name "*.html" -type f -exec sed -i 's|href="\./"|href="../"|g' {} \;
 
           touch _site/.nojekyll
+          
+          # Debug: lister les fichiers générés
+          echo "Generated files structure:"
+          find _site -type f -name "*.html" | sort
+          echo ""
+          echo "Project files:"
+          ls -lh _site/projects/ || echo "No projects directory found"
+          
           echo "Static site built successfully!"
 
       - name: Setup Pages
