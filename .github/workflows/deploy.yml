@@ -125,20 +125,20 @@ jobs:
           curl -sL http://localhost:3000/contact -o _site/contact.html
           curl -sL http://localhost:3000/projects -o _site/projects.html
           
-          # Télécharger les pages de projets individuels (dans des dossiers avec index.html)
-          mkdir -p _site/projects/nutri-flow _site/projects/nestio-bnb _site/projects/scandela
-          curl -sL http://localhost:3000/projects/nutri-flow -o _site/projects/nutri-flow/index.html
-          curl -sL http://localhost:3000/projects/nestio-bnb -o _site/projects/nestio-bnb/index.html
-          curl -sL http://localhost:3000/projects/scandela -o _site/projects/scandela/index.html
+          # Télécharger les pages de projets individuels (fichiers HTML directs)
+          mkdir -p _site/projects
+          curl -sL http://localhost:3000/projects/nutri-flow -o _site/projects/nutri-flow.html
+          curl -sL http://localhost:3000/projects/nestio-bnb -o _site/projects/nestio-bnb.html
+          curl -sL http://localhost:3000/projects/scandela -o _site/projects/scandela.html
 
           # Vérifier les fichiers HTML téléchargés
-          for file in _site/*.html _site/projects/*/index.html; do
+          for file in _site/*.html _site/projects/*.html; do
             if [ ! -s "$file" ] || grep -q "Action Controller: Exception" "$file"; then
               echo "Error: $file is empty or contains an error page"
               head -50 "$file" || true
               exit 1
             fi
-            echo "✓ $(basename $(dirname $(dirname $file)))/$(basename $(dirname $file))/$(basename $file) downloaded ($(wc -c < "$file") bytes)"
+            echo "✓ $(basename $(dirname $file))/$(basename $file) downloaded ($(wc -c < "$file") bytes)"
           done
 
           kill $RAILS_PID 2>/dev/null || true
@@ -158,7 +158,17 @@ jobs:
           find _site -name "*.html" -type f -exec sed -i 's|action="/|action="./|g' {} \;
           # Rendre l'importmap relative pour GitHub Pages (sous-chemins éventuels)
           find _site -name "*.html" -type f -exec sed -i 's|"\/assets/|"./assets/|g' {} \;
-          # Les liens vers les projets pointent déjà vers ./projects/nutri-flow etc, pas besoin de modifier
+          # Corriger les liens vers les projets pour pointer vers les fichiers HTML
+          find _site -name "*.html" -type f -exec sed -i 's|href="\./projects/\([^"]*\)"|href="./projects/\1.html"|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|href="/projects/\([^"]*\)"|href="./projects/\1.html"|g' {} \;
+          # Corriger les chemins relatifs dans les pages de projets (elles sont dans un sous-dossier)
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\./assets/|href="../assets/|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|src="\./assets/|src="../assets/|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|"\./assets/|"../assets/|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\./about|href="../about|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\./contact|href="../contact|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\./projects|href="../projects|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\./"|href="../"|g' {} \;
 
           touch _site/.nojekyll
           echo "Static site built successfully!"
