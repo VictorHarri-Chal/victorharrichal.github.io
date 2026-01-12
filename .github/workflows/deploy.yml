@@ -151,15 +151,37 @@ jobs:
 
           echo "Fixing links in HTML files..."
           find _site -name "*.html" -type f -exec sed -i 's|http://localhost:3000/||g' {} \;
-          find _site -name "*.html" -type f -exec sed -i 's|href="/|href="./|g' {} \;
-          find _site -name "*.html" -type f -exec sed -i 's|src="/|src="./|g' {} \;
-          find _site -name "*.html" -type f -exec sed -i 's|action="/|action="./|g' {} \;
-          # Rendre l'importmap relative pour GitHub Pages (sous-chemins éventuels)
-          find _site -name "*.html" -type f -exec sed -i 's|"\/assets/|"./assets/|g' {} \;
+          
+          # Fix links in root HTML files (./assets/)
+          find _site -maxdepth 1 -name "*.html" -type f -exec sed -i 's|href="/|href="./|g' {} \;
+          find _site -maxdepth 1 -name "*.html" -type f -exec sed -i 's|src="/|src="./|g' {} \;
+          find _site -maxdepth 1 -name "*.html" -type f -exec sed -i 's|action="/|action="./|g' {} \;
+          find _site -maxdepth 1 -name "*.html" -type f -exec sed -i 's|"\/assets/|"./assets/|g' {} \;
+          
+          # Fix links in project HTML files (../assets/ since they're in a subdirectory)
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="/|href="../|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|src="/|src="../|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|action="/|action="../|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|"\/assets/|"../assets/|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\.\/assets/|href="../assets/|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|src="\.\/assets/|src="../assets/|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="/icon\.|href="../icon.|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|src="/icon\.|src="../icon.|g' {} \;
+          
+          # Fix navigation links in project pages to point to root pages
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\.\.\/about"|href="../about.html"|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\.\.\/contact"|href="../contact.html"|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\.\.\/projects"|href="../projects.html"|g' {} \;
+          find _site/projects -name "*.html" -type f -exec sed -i 's|href="\.\.\/"|href="../index.html"|g' {} \;
+          
           # Fix project links to point to .html files for GitHub Pages
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/nutri-flow"|href="./projects/nutri-flow.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/nestio-bnb"|href="./projects/nestio-bnb.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/scandela"|href="./projects/scandela.html"|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|href="\.\.\/projects\/nutri-flow"|href="../projects/nutri-flow.html"|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|href="\.\.\/projects\/nestio-bnb"|href="../projects/nestio-bnb.html"|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|href="\.\.\/projects\/scandela"|href="../projects/scandela.html"|g' {} \;
+          
           # Fix JavaScript navigation links
           find _site -name "*.html" -type f -exec sed -i 's|window\.location\.href = "/projects/|window.location.href = "./projects/|g' {} \;
           find _site -name "*.js" -type f -exec sed -i 's|window\.location\.href = "/projects/|window.location.href = "./projects/|g' {} \;
