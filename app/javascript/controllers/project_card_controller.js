@@ -22,7 +22,12 @@ export default class extends Controller {
     console.log("Navigating to project:", projectSlug)
 
     if (projectSlug) {
-      window.location.href = `/projects/${projectSlug}`
+      // Use relative path for GitHub Pages compatibility
+      // Calculate relative path based on current location
+      const currentPath = window.location.pathname
+      const isInProjects = currentPath.includes('/projects/')
+      const basePath = isInProjects ? '../' : './'
+      window.location.href = `${basePath}projects/${projectSlug}.html`
     }
   }
 }

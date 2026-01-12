@@ -124,6 +124,11 @@ jobs:
           curl -sL http://localhost:3000/about -o _site/about.html
           curl -sL http://localhost:3000/contact -o _site/contact.html
           curl -sL http://localhost:3000/projects -o _site/projects.html
+          
+          mkdir -p _site/projects
+          curl -sL http://localhost:3000/projects/nutri-flow -o _site/projects/nutri-flow.html
+          curl -sL http://localhost:3000/projects/nestio-bnb -o _site/projects/nestio-bnb.html
+          curl -sL http://localhost:3000/projects/scandela -o _site/projects/scandela.html
 
           for file in _site/*.html; do
             if [ ! -s "$file" ] || grep -q "Action Controller: Exception" "$file"; then
@@ -151,6 +156,13 @@ jobs:
           find _site -name "*.html" -type f -exec sed -i 's|action="/|action="./|g' {} \;
           # Rendre l'importmap relative pour GitHub Pages (sous-chemins éventuels)
           find _site -name "*.html" -type f -exec sed -i 's|"\/assets/|"./assets/|g' {} \;
+          # Fix project links to point to .html files for GitHub Pages
+          find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/nutri-flow"|href="./projects/nutri-flow.html"|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/nestio-bnb"|href="./projects/nestio-bnb.html"|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/scandela"|href="./projects/scandela.html"|g' {} \;
+          # Fix JavaScript navigation links
+          find _site -name "*.html" -type f -exec sed -i 's|window\.location\.href = "/projects/|window.location.href = "./projects/|g' {} \;
+          find _site -name "*.js" -type f -exec sed -i 's|window\.location\.href = "/projects/|window.location.href = "./projects/|g' {} \;
 
           touch _site/.nojekyll
           echo "Static site built successfully!"
