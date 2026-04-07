@@ -1,24 +1,24 @@
 <section class="w-full">
   <div class="max-w-6xl mx-auto">
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Grand projet à gauche -->
+
+      <!-- Vigie — grosse card à gauche -->
       <article class="lg:col-span-1">
-        <div class="project-card project-card--large relative rounded-2xl bg-neutral-900/40 border border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:shadow-[0_0_40px_rgba(168,85,247,0.5)] p-12 hover:scale-[1.02] transition-all duration-300 overflow-hidden group cursor-pointer h-full min-h-[600px]"
+        <div class="project-card project-card--large relative rounded-2xl bg-neutral-900/40 border border-amber-500/50 shadow-[0_0_30px_rgba(245,158,11,0.3)] hover:shadow-[0_0_40px_rgba(245,158,11,0.5)] p-12 hover:scale-[1.02] transition-all duration-300 overflow-hidden group cursor-pointer h-full min-h-[600px]"
              data-controller="gradient reveal project-card"
-             data-project-card-project-slug-value="nutri-flow"
+             data-project-card-project-slug-value="vigie"
              data-action="click->project-card#click"
              role="button"
              tabindex="0"
-             aria-label="View NutriFlow project">
+             aria-label="View Vigie project">
 
-          <!-- Gradients -->
           <div class="project-gradient project-gradient--dynamic absolute inset-0 bg-gradient-radial from-white/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" data-gradient-target="gradient"></div>
           <div class="project-gradient project-gradient--static absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none"></div>
 
           <div class="relative z-10 h-full flex flex-col">
             <header class="flex justify-between items-start mb-6">
-              <time class="text-sm text-neutral-400 font-medium" datetime="2025-01-15">July 2025</time>
-              <a href="https://github.com/VictorHarri-Chal/NutriFlow"
+              <time class="text-sm text-neutral-400 font-medium" datetime="2026-03-01">March 2026</time>
+              <a href="https://github.com/VictorHarri-Chal/Vigie"
                  target="_blank"
                  rel="noopener noreferrer"
                  class="text-neutral-400 hover:text-white transition-colors duration-300"
@@ -27,14 +27,14 @@
               </a>
             </header>
 
-            <h2 class="text-4xl font-semibold mb-6 text-white">NutriFlow</h2>
+            <h2 class="text-4xl font-semibold mb-6 text-white">Vigie</h2>
 
             <div class="space-y-4 text-neutral-300 leading-relaxed flex-grow">
-              <p class="text-lg">Comprehensive fitness and nutrition tracking application designed for athletes and health-conscious individuals. Features include customizable food database, daily meal planning with macro tracking, personalized calorie calculations, recipe management, interactive shopping lists, and workout performance tracking. Built with modern web technologies for seamless user experience.</p>
+              <p class="text-lg">Vigie gives municipal teams a real-time view of their entire waste collection network. Spot which collection points need emptying on a color-coded map, plan optimized tours with road-accurate routing, manage incidents, and track fleet performance through dedicated dashboards — all in one place.</p>
             </div>
 
             <div class="mt-6">
-              <%= link_to project_path('nutri-flow'), class: "inline-flex items-center gap-2 text-white hover:text-neutral-300 transition-colors duration-300 font-medium" do %>
+              <%= link_to project_path('vigie'), class: "inline-flex items-center gap-2 text-white hover:text-neutral-300 transition-colors duration-300 font-medium" do %>
                 Read more
                 <i class="fa-solid fa-arrow-right text-sm"></i>
               <% end %>
@@ -43,9 +43,42 @@
         </div>
       </article>
 
-      <!-- Deux petits projets à droite -->
+      <!-- Trois petites cards à droite -->
       <div class="lg:col-span-1 flex flex-col gap-8 h-full">
-        <!-- Premier petit projet -->
+
+        <!-- NutriFlow -->
+        <article class="flex-1 min-h-0">
+          <div class="project-card project-card--small relative rounded-2xl bg-neutral-900/40 border border-purple-500/50 shadow-[0_0_30px_rgba(168,85,247,0.3)] hover:shadow-[0_0_40px_rgba(168,85,247,0.5)] p-8 hover:scale-[1.02] transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col"
+               data-controller="gradient reveal project-card"
+               data-project-card-project-slug-value="nutri-flow"
+               data-action="click->project-card#click"
+               role="button"
+               tabindex="0"
+               aria-label="View NutriFlow project">
+
+            <div class="project-gradient project-gradient--dynamic absolute inset-0 bg-gradient-radial from-white/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" data-gradient-target="gradient"></div>
+            <div class="project-gradient project-gradient--static absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none"></div>
+
+            <div class="relative z-10 flex flex-col h-full">
+              <header class="flex justify-between items-start mb-4">
+                <time class="text-sm text-neutral-400 font-medium" datetime="2025-07-01">July 2025</time>
+                <a href="https://github.com/VictorHarri-Chal/NutriFlow"
+                   target="_blank"
+                   rel="noopener noreferrer"
+                   class="text-neutral-400 hover:text-white transition-colors duration-300"
+                   aria-label="View source code on GitHub">
+                  <i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
+                </a>
+              </header>
+              <h2 class="text-2xl font-semibold mb-3 text-white">NutriFlow</h2>
+              <div class="text-neutral-300 leading-relaxed flex-grow">
+                <p class="text-sm">Fitness and nutrition tracking for athletes. Customizable food database, daily meal planning with macro tracking, recipe management, shopping lists, and workout performance tracking.</p>
+              </div>
+            </div>
+          </div>
+        </article>
+
+        <!-- NestioBnb -->
         <article class="flex-1 min-h-0">
           <div class="project-card project-card--small relative rounded-2xl bg-neutral-900/40 border border-cyan-500/50 shadow-[0_0_30px_rgba(6,182,212,0.3)] hover:shadow-[0_0_40px_rgba(6,182,212,0.5)] p-8 hover:scale-[1.02] transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col"
                data-controller="gradient reveal project-card"
@@ -55,13 +88,12 @@
                tabindex="0"
                aria-label="View NestioBnb project">
 
-            <!-- Gradients -->
             <div class="project-gradient project-gradient--dynamic absolute inset-0 bg-gradient-radial from-white/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" data-gradient-target="gradient"></div>
             <div class="project-gradient project-gradient--static absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none"></div>
 
             <div class="relative z-10 flex flex-col h-full">
               <header class="flex justify-between items-start mb-4">
-                <time class="text-sm text-neutral-400 font-medium" datetime="2025-01-07">April 2025</time>
+                <time class="text-sm text-neutral-400 font-medium" datetime="2025-04-01">April 2025</time>
                 <a href="https://github.com/VictorHarri-Chal/NestioBnb"
                    target="_blank"
                    rel="noopener noreferrer"
@@ -70,17 +102,15 @@
                   <i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
                 </a>
               </header>
-
-              <h2 class="text-2xl font-semibold mb-4 text-white">NestioBnb</h2>
-
-              <div class="space-y-3 text-neutral-300 leading-relaxed flex-grow">
-                <p>A full-featured accommodation rental platform that makes finding and booking places to stay a breeze. Features an interactive map for property discovery, a smooth booking system, and a smart AI chatbot for personalized recommendations. Designed to connect hosts and guests seamlessly.</p>
+              <h2 class="text-2xl font-semibold mb-3 text-white">NestioBnb</h2>
+              <div class="text-neutral-300 leading-relaxed flex-grow">
+                <p class="text-sm">Accommodation rental platform with interactive map, a smooth booking system, and an AI chatbot for personalized recommendations.</p>
               </div>
             </div>
           </div>
         </article>
 
-        <!-- Deuxième petit projet -->
+        <!-- Scandela -->
         <article class="flex-1 min-h-0">
           <div class="project-card project-card--small relative rounded-2xl bg-neutral-900/40 border border-emerald-500/50 shadow-[0_0_30px_rgba(16,185,129,0.3)] hover:shadow-[0_0_40px_rgba(16,185,129,0.5)] p-8 hover:scale-[1.02] transition-all duration-300 overflow-hidden group cursor-pointer h-full flex flex-col"
                data-controller="gradient reveal project-card"
@@ -90,13 +120,12 @@
                tabindex="0"
                aria-label="View Scandela project">
 
-            <!-- Gradients -->
             <div class="project-gradient project-gradient--dynamic absolute inset-0 bg-gradient-radial from-white/8 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none" data-gradient-target="gradient"></div>
             <div class="project-gradient project-gradient--static absolute inset-0 bg-gradient-to-br from-white/5 via-transparent to-transparent pointer-events-none"></div>
 
             <div class="relative z-10 flex flex-col h-full">
               <header class="flex justify-between items-start mb-4">
-                <time class="text-sm text-neutral-400 font-medium" datetime="2024-06-15">Sept 2023 - June 2025</time>
+                <time class="text-sm text-neutral-400 font-medium" datetime="2025-06-01">Sept 2023 – June 2025</time>
                 <a href="https://github.com/Team-Scandela/Scandela"
                    target="_blank"
                    rel="noopener noreferrer"
@@ -105,15 +134,14 @@
                   <i class="fa-brands fa-github fa-lg" aria-hidden="true"></i>
                 </a>
               </header>
-
-              <h2 class="text-2xl font-semibold mb-4 text-white">Scandela</h2>
-
-              <div class="space-y-3 text-neutral-300 leading-relaxed flex-grow">
-                <p>Master's thesis project: cartographic analysis and simulation software for public lighting optimization. Interactive map platform helping local authorities reduce electrical and environmental costs while ensuring safety through advanced filtering and analysis tools.</p>
+              <h2 class="text-2xl font-semibold mb-3 text-white">Scandela</h2>
+              <div class="text-neutral-300 leading-relaxed flex-grow">
+                <p class="text-sm">Master's thesis: cartographic analysis platform for public lighting optimization. Helps local authorities reduce electrical costs while ensuring safety.</p>
               </div>
             </div>
           </div>
         </article>
+
       </div>
     </div>
   </div>

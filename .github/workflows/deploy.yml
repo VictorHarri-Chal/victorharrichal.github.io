@@ -126,6 +126,7 @@ jobs:
           curl -sL http://localhost:3000/projects -o _site/projects.html
           
           mkdir -p _site/projects
+          curl -sL http://localhost:3000/projects/vigie -o _site/projects/vigie.html
           curl -sL http://localhost:3000/projects/nutri-flow -o _site/projects/nutri-flow.html
           curl -sL http://localhost:3000/projects/nestio-bnb -o _site/projects/nestio-bnb.html
           curl -sL http://localhost:3000/projects/scandela -o _site/projects/scandela.html
@@ -175,9 +176,11 @@ jobs:
           find _site/projects -name "*.html" -type f -exec sed -i 's|href="\.\.\/"|href="../index.html"|g' {} \;
           
           # Fix project links to point to .html files for GitHub Pages
+          find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/vigie"|href="./projects/vigie.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/nutri-flow"|href="./projects/nutri-flow.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/nestio-bnb"|href="./projects/nestio-bnb.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\/projects\/scandela"|href="./projects/scandela.html"|g' {} \;
+          find _site -name "*.html" -type f -exec sed -i 's|href="\.\.\/projects\/vigie"|href="../projects/vigie.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\.\/projects\/nutri-flow"|href="../projects/nutri-flow.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\.\/projects\/nestio-bnb"|href="../projects/nestio-bnb.html"|g' {} \;
           find _site -name "*.html" -type f -exec sed -i 's|href="\.\.\/projects\/scandela"|href="../projects/scandela.html"|g' {} \;
